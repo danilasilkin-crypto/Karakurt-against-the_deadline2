@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11151c"><title>Каракурт против дедлайна — Sharrowkin Jam 2026</title>
+<meta name="description" content="Ты — паук Точка. Прыгай по клавиатуре, делай опечатки и отправь программиста спать. Браузерная аркада для Sharrowkin Jam 2026: Паук против Человека.">
+<meta property="og:title" content="Каракурт против дедлайна"><meta property="og:description" content="Паук саботирует сборку, чтобы спасти человека от третьей бессонной ночи. Sharrowkin Jam 2026 · Spider vs Human."><meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU"><meta property="og:image" content="assets/preview.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png"><meta property="og:image:alt" content="Каракурт Точка на мятной клавише под нависшим пальцем. Сломай сборку. Спаси человека.">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Каракурт против дедлайна"><meta name="twitter:description" content="Три ночи, 15 глав: спаси человека, бэкап в грозу и завтрашний показ. Маленький паук против большого дедлайна."><meta name="twitter:image" content="assets/preview.png"><meta name="twitter:image:alt" content="Точка на клавиатуре: маленький паук, большая забота.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='82'%3E🕷%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="menu" class="menu" aria-labelledby="menu-title">
+  <canvas id="menu-canvas" aria-hidden="true"></canvas>
+  <div class="menu-inner">
+    <div class="menu-copy">
+    <p class="menu-jam"><i></i> SHARROWKIN JAM 2026 · ТЕМА: ПАУК ПРОТИВ ЧЕЛОВЕКА</p>
+    <h1 id="menu-title">Каракурт<br><span>против дедлайна</span></h1>
+    <p class="menu-lead">Ты — паук Точка. Он — программист, который третью ночь не спит. Сломай сборку, пока она не сломала человека.</p>
+    <div class="night-picker" role="group" aria-label="Выбор ночи">
+      <button data-night="0" aria-pressed="true"><span>01 / ДОЛГ</span><b>Долг размером с крошку</b><small>ДОСТУПНА</small></button>
+      <button data-night="1" aria-pressed="false" disabled><span>02 / ГРОЗА</span><b>Гроза в проводах</b><small>ПОСЛЕ НОЧИ 1</small></button>
+      <button data-night="2" aria-pressed="false" disabled><span>03 / ПОКАЗ</span><b>Показ без паники</b><small>ПОСЛЕ НОЧИ 2</small></button>
+    </div>
+    <p id="night-description" class="night-description">Пять глав первой ночи.</p>
+    </div>
+    <div class="menu-panel">
+    <p class="menu-art-caption">МАЛЕНЬКИЙ ПАУК. БОЛЬШАЯ ЗАБОТА.</p>
+    <nav class="menu-actions" aria-label="Главное меню">
+      <button id="menu-play" class="menu-primary">НАЧАТЬ НОЧЬ <span>↗</span></button>
+      <button id="menu-continue" class="menu-secondary" hidden>ПРОДОЛЖИТЬ</button>
+      <button id="menu-arcade" class="menu-secondary" hidden>ЕЩЁ ОДИН ФИКС · АРКАДА</button>
+      <button id="menu-help" class="menu-secondary">КАК ИГРАТЬ <kbd>?</kbd></button>
+      <button id="menu-about" class="menu-secondary">ОБ ИГРЕ</button>
+    </nav>
+    <div class="menu-settings" role="group" aria-label="Настройки">
+      <button id="menu-sound" aria-pressed="false">ЗВУК: ВЫКЛ</button><button id="menu-audio" aria-label="Настроить звук" aria-haspopup="dialog">МИКШЕР</button><button id="menu-motion" aria-pressed="false">FX</button><button id="menu-fullscreen" aria-pressed="false">⛶ НА ВЕСЬ ЭКРАН</button>
+    </div>
+    <p class="menu-track" id="menu-track"><span class="track-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="menu-track-text">Включи звук — послушай ночную тему «03:47».</span></p>
+    <p id="menu-medals" class="menu-meta"></p>
+    <p class="menu-meta"><span id="menu-record">5 глав · контрольные точки</span><span>Enter — начать · F — полный экран</span></p>
+    </div>
+  </div>
+</section>
+<dialog id="about-dialog" class="field-guide" aria-labelledby="about-title"><div class="guide-heading"><div><p class="eyebrow">ОБ ИГРЕ</p><h2 id="about-title">Человек не враг</h2></div><button id="close-about" class="pause" aria-label="Закрыть">✕</button></div><div class="guide-grid"><p><b>Как мы прочли тему.</b> Паук против человека — это не драка. Паук крошечный, человек огромный, но проблема у человека одна: он не умеет вовремя остановиться. Играешь за паука, который спасает человека от самого себя.</p><p><b>Сюжет «Долг размером с крошку».</b> Лёша однажды вынес каракурта в стакане вместо тапка. Теперь паук Точка живёт под Esc и возвращает долг: ломает сборку, чтобы Лёша наконец лёг спать. Три ночи, пятнадцать глав: диверсия ради сна, спасение бэкапа в грозу и подготовка показа. Новые маршруты на время, исчезающие цели, крошки-бонусы. Контрольные точки, медали и аркада после первой ночи.</p></div><p class="guide-keys">Сделано за Sharrowkin Jam 2026 вместе с Sharrowkin.<br>HTML + JavaScript + Canvas + Web Audio. Арт, музыка «03:47» и эффекты созданы кодом, без внешних библиотек и загрузок.<br>Sharrowkin Jam · ПАУК ПРОТИВ ЧЕЛОВЕКА / Spider vs Human</p><figure class="cover-preview"><img src="assets/preview.png" width="1200" height="630" loading="lazy" alt="Точка на клавиатуре под нависшим пальцем. Сломай сборку. Спаси человека."><figcaption>Обложка для джема · <a href="assets/preview.png" download="karakurt-preview.png">1200 × 630</a> · <a href="assets/jam-cover.png" download="karakurt-jam-cover.png">630 × 500</a></figcaption></figure></dialog>
+<header class="topbar"><a class="brand" href="./">▦ <span>НОЧНАЯ СМЕНА</span></a><span class="jam"><i></i> SHARROWKIN JAM / 2026</span><nav class="toolbar" aria-label="Настройки игры"><button id="help" aria-label="Как играть">?</button><button id="motion" aria-label="Уменьшить анимацию" aria-pressed="false" title="Уменьшить анимацию">FX</button><button id="sound" aria-label="Включить звук" aria-pressed="false">ЗВУК: ВЫКЛ</button><button id="audio-settings" aria-label="Настроить звук" aria-haspopup="dialog" title="Музыка и эффекты">♫</button><button id="fullscreen" aria-label="На весь экран" aria-pressed="false" title="На весь экран · F">⛶ <span>НА ВЕСЬ ЭКРАН</span></button></nav></header>
+<div id="display-status" class="display-toast" role="status" hidden></div>
+<main>
+<section class="heading"><div><p class="eyebrow">ИСТОРИЯ О МАЛЕНЬКОЙ ДИВЕРСИИ И БОЛЬШОЙ ЗАБОТЕ</p><h1>Каракурт <span>против дедлайна</span></h1></div><div class="clock"><b id="night-clock">03:47</b><span id="night-caption">НОЧЬ 1 · ВЕРНУТЬ ДОЛГ</span></div></section>
+<ol class="chapters" aria-label="Главы истории"><li aria-current="step"><span>01</span> Ещё один фикс</li><li><span>02</span> Ctrl+Z</li><li><span>03</span> Кофе</li><li><span>04</span> Охота</li><li><span>05</span> Рассвет</li></ol>
+<section class="game" aria-label="Игровая область">
+<div class="hud">
+  <div><span class="label" id="objective">ПОСЕЙ ПЕРВЫЕ 8 ОШИБОК</span><strong><span id="score">0</span><small id="score-label"> действий · глава 1/5</small></strong><div class="meter"><i id="progress"></i></div></div>
+  <div class="hud-right"><div id="dash-status" class="dash-status" aria-label="Рывок готов"><span class="label">РЫВОК · SHIFT</span><strong id="dash-time">ГОТОВ</strong><div class="dash-meter" aria-hidden="true"><i id="dash-progress"></i></div></div><div><span class="label">ДО АВТОСБОРКИ</span><strong id="time">90</strong><small> с</small></div><div><span class="label">ПАНЦИРЬ</span><strong id="lives" class="hearts" aria-label="3 жизни">● ● ●</strong></div><button id="pause" class="pause" aria-label="Пауза" hidden>Ⅱ</button></div>
+</div>
+<div class="arena">
+  <div id="event-state" class="event-state" aria-live="polite">ЕЩЁ ОДИН ФИКС</div>
+  <canvas id="board" width="1200" height="650" tabindex="0" aria-label="Клавиатура. Стрелки или WASD — движение, пробел — опечатка, Shift — рывок, E — паутина. Готовность рывка показана в верхней панели."></canvas>
+  <div class="overlay" id="overlay"><div class="intro-card" role="dialog" aria-labelledby="title" aria-describedby="description">
+    <p class="eyebrow" id="overline">ГЛАВА 01 / ДОЛГ РАЗМЕРОМ С КРОШКУ</p>
+    <h2 id="title">Он спас тебя.<br>Теперь твоя очередь.</h2>
+    <p id="description">Неделю назад Лёша вынес тебя из-под тапка в стакане. Сегодня он третью ночь не спит. Ты — каракурт Точка. Сломай сборку, пока она не сломала его.</p>
+    <div class="rules" id="rules"><span><b>01</b> Мятная клавиша + пробел = опечатка</span><span><b>02</b> Уходи с красного; Shift — рывок</span><span><b>03</b> E — паутина: поймать один удар</span></div>
+    <div id="results" class="results" hidden></div>
+    <button class="primary" id="start">СПАСТИ ЧЕЛОВЕКА <span>↗</span></button>
+    <button class="primary" id="next-night" hidden>СЛЕДУЮЩАЯ НОЧЬ ↗</button>
+    <button class="to-menu" id="to-menu" hidden>← В ГЛАВНОЕ МЕНЮ</button>
+    <p class="record" id="record">5 глав · 3 жизни на главу · контрольные точки</p>
+  </div></div>
+</div>
+<div class="terminal"><span class="dot"></span><span id="log" role="status">developer@night:~$ ещё один маленький коммит…</span><span class="branch">⑂ save/human</span></div>
+</section>
+<section class="dialogue" aria-label="Реплика героя" aria-live="polite"><div class="portrait" aria-hidden="true">: :</div><div><span id="speaker">ТОЧКА · КАРАКУРТ</span><p id="line">Он дал мне стакан вместо тапка. Я подарю ему утро без будильника.</p></div><span class="dialogue-mark" aria-hidden="true">“</span></section>
+<div class="tactics"><span>ТЫ: <b id="position">G</b> <span class="tactics-arrow">→</span> ЦЕЛЬ: <b id="target-key">G</b></span><span id="combo">СЕРИЯ ×0</span><span>ШЁЛК <b id="silk">2 / 3</b></span><span id="charge" class="tip">8 ЛАП: 0/6</span></div>
+<div class="touch" aria-label="Экранное управление" hidden>
+  <div class="arrows"><button data-direction="ArrowLeft" aria-label="Влево">←</button><button data-direction="ArrowUp" aria-label="Вверх">↑</button><button data-direction="ArrowDown" aria-label="Вниз">↓</button><button data-direction="ArrowRight" aria-label="Вправо">→</button></div>
+  <span id="route-status" role="status">E на ловушке — начать маршрут</span>
+  <button id="typo">ОПЕЧАТКА <kbd>SPACE</kbd></button><button id="dash">РЫВОК <kbd>SHIFT</kbd></button><button id="web">ПАУТИНА <kbd>E</kbd></button>
+</div>
+<div class="below"><div class="controls"><span><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> движение</span><span><kbd>P / ESC</kbd> пауза</span><span>Удерживай стрелку, чтобы бежать</span></div><p>НЕ КУСАТЬ. НЕ СДАВАТЬСЯ.</p></div>
+</main>
+<dialog id="guide-dialog" class="field-guide" aria-labelledby="guide-title"><div class="guide-heading"><div><p class="eyebrow">ЗАПИСКИ ИЗ-ПОД ESC</p><h2 id="guide-title">Как спасти человека</h2></div><button id="close-help" class="pause" aria-label="Закрыть подсказки">✕</button></div><div class="guide-grid"><p><b>Три ночи по пять глав.</b> Сначала спаси Лёшу от дедлайна, затем бэкап от грозы, а в конце подготовь показ без паники. Ночи открываются по порядку. Собирай цели пробелом, плети маршруты на E до истечения отсчёта, лови удары. Золотая крошка в передышке: до +4 секунд и +2 заряда. Таймер и три жизни обновляются в начале главы; чтение не тратит время.</p><p><b>Паутинный путь.</b> Поставь ловушку E, нажми E на ней ещё раз, перейди на другую клавишу и соедини её через E за одну дополнительную нить. Путь живёт 18 секунд; Shift на любом конце переносит к другому (перезарядка 1,5 с). E у начала отменяет незавершённую нить. Задачи и Ctrl+Z имеют приоритет. Поздний уход из-под удара даёт +1 заряд «На волоске».<br><b>Паутина — твой план Б.</b> E оставляет на текущей клавише ловушку на 6 секунд. Она съест один удар. Каждые 5 секунд и 4 опечатки дают нить, запас — до трёх. Крепления кружки и блокировка Ctrl+Z не расходуют защитный шёлк.</p><p><b>Не суетись, но не медли.</b> Делай следующую опечатку за 4 секунды, чтобы продолжить серию. Каждая третья в серии даёт до +3 секунд (не выше таймера главы). Опечатки и перехваты наполняют шкалу «8 лап»: усиленный Shift оставляет защитную нить и даёт секунду неуязвимости.</p><p><b>Читай руки, а не только таймер.</b> Backspace движется влево, две руки оставляют безопасный ряд. Каждые 24 секунды — шестисекундное окно без новых атак. Кофе замедляет, рывок вытаскивает. Поражение позволяет повторить текущую главу; в меню есть сохранённое продолжение.</p></div><p class="guide-keys">WASD / стрелки — движение · Пробел — опечатка · Shift — рывок · E — паутина<br>P / Esc — пауза · F — полный экран · FX — меньше анимации<br>Для полного управления нужна клавиатура. Откат рывка — в верхней панели рядом с таймером.</p></dialog>
+<dialog id="audio-dialog" class="field-guide audio-dialog" aria-labelledby="audio-title">
+  <div class="guide-heading"><div><p class="eyebrow">ЗВУК НОЧНОЙ СМЕНЫ</p><h2 id="audio-title">Тише. Он работает.</h2></div><button id="close-audio" class="pause" aria-label="Закрыть настройки звука">✕</button></div>
+  <p class="audio-intro">Три темы: «03:47», «Гроза в проводах», «До полуночи». Музыка меняется для плетения, охоты, финала, передышки и опасности. Предупреждения остаются на первом плане.</p>
+  <button id="audio-toggle" class="pause" aria-pressed="false">ЗВУК: ВЫКЛ</button>
+  <div class="mixer-row"><label for="volume-music">Музыка</label><output id="level-music" for="volume-music">45%</output><input id="volume-music" type="range" min="0" max="100" step="1" value="45"></div>
+  <div class="mixer-row"><label for="volume-effects">Эффекты</label><output id="level-effects" for="volume-effects">70%</output><input id="volume-effects" type="range" min="0" max="100" step="1" value="70"></div>
+  <button id="audio-test" class="to-menu">ПОСЛУШАТЬ ПАУТИНУ</button>
+  <p id="audio-status" class="guide-keys" role="status">Звук включается только по твоему нажатию.</p>
+  <p class="audio-note">0% — отключить дорожку. Настройки сохраняются на этом устройстве. При уходе с вкладки звук засыпает; игра ждёт на паузе.</p>
+</dialog>
+<script src="soundtrack.js"></script><script src="audio.js"></script><script src="audio-ui.js"></script>
+<script src="model.js"></script><script src="campaign.js"></script><script src="nights.js"></script><script src="journey.js"></script><script src="story.js"></script><script src="art.js"></script><script src="menu.js"></script><script src="backdrop.js"></script><script src="scene.js"></script><script src="render.js"></script><script src="display.js"></script><script src="game.js"></script>
+</body></html>

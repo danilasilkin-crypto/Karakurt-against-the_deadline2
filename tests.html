@@ -1,0 +1,38 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Проверки игры</title><style>body{background:#11151c;color:#bbf880;font:16px monospace;padding:35px}li{margin:14px 0}.fail{color:#ff7777}a{color:#99dfff}</style><h1>Проверки игровых правил</h1><ol id="results"></ol><strong id="summary"></strong><p><a href="ui-tests.html">Проверки интерфейса →</a></p><script src="model.js"></script><script src="story.js"></script><script>
+let passed=0,failed=0;
+function test(name,fn){const li=document.createElement('li');try{fn();li.textContent='PASS — '+name;passed++;}catch(e){li.textContent='FAIL — '+name+': '+e.message;li.className='fail';failed++;}document.querySelector('#results').append(li);}
+function assert(condition,message='Нарушено условие'){if(!condition)throw Error(message);}
+function game(){const g=new NightGame(()=>.4);g.start();return g;}
+function target(g){while(g.row!==g.target.row)g.move(Math.sign(g.target.row-g.row),0);while(g.col!==g.target.col)g.move(0,Math.sign(g.target.col-g.col));}
+function score(g,n){for(let i=0;i<n;i++){if(g.phase==='chapter')g.continueChapter();target(g);g.typo();}}
+function strike(g,delay=1){g.strikes=[{row:g.row,col:g.col,age:0,delay,hit:false}];}
+test('Начальное состояние и запрет действий до старта',()=>{const g=new NightGame();g.move(1,0);g.typo();g.weave();g.tick(4);assert(g.row===1&&g.score===0&&g.time===90&&g.silk===2&&g.webs.length===0);});
+test('Движение и границы клавиатуры',()=>{const g=game();g.move(-1,1);assert(g.row===0&&g.col===5);for(let i=0;i<20;i++)g.move(-1,-1);assert(g.row===0&&g.col===0);for(let i=0;i<20;i++)g.move(1,1);assert(g.row===2&&g.col===9);});
+test('Опечатка только на целевой клавише',()=>{const g=game();g.move(0,1);assert(!g.typo()&&g.score===0);g.move(0,-1);assert(g.typo()&&g.score===1);assert(g.target.row!==g.row||g.target.col!==g.col);});
+test('Новые цели достижимы при разных источниках случайности',()=>{for(const random of [()=>0,()=>.99999,()=>.5]){const g=new NightGame(random);g.start();for(let i=0;i<23;i++){if(g.phase==='chapter')g.continueChapter();const old={...g.target};target(g);g.typo();const d=Math.abs(g.target.row-old.row)+Math.abs(g.target.col-old.col);assert(d>=2&&d<=5);assert(g.target.row>=0&&g.target.row<3&&g.target.col>=0&&g.target.col<10);}}});
+test('Предупреждение не наносит ранний урон; удар наносит один',()=>{const g=game();strike(g);g.tick(.9);assert(g.lives===3);g.tick(.11);assert(g.lives===2&&g.hits===1);g.tick(.1);assert(g.lives===2);});
+test('Уход с опасной клавиши спасает от удара',()=>{const g=game();strike(g);g.move(0,1);g.tick(1.1);assert(g.lives===3);});
+test('Рывок: два шага, перезарядка и неуязвимость',()=>{const g=game();assert(g.dash(0,1)&&g.col===6);assert(!g.dash(0,1));strike(g,.1);g.tick(.11);assert(g.lives===3);g.nextStrike=20;g.tick(3);assert(g.dash(0,-1)&&g.col===4);});
+test('Рывок в стену не расходует перезарядку',()=>{const g=game();for(let i=0;i<5;i++)g.move(0,-1);assert(!g.dash(0,-1)&&g.cooldown===0&&g.invulnerable===0);});
+test('Пауза замораживает все таймеры и действия',()=>{const g=game();g.weave();g.typo();g.dash(0,1);g.pause();const state=JSON.stringify(g);g.tick(10);g.move(1,0);g.typo();g.weave();g.dash(0,1);assert(JSON.stringify(g)===state);g.pause();g.tick(1);assert(g.time===89);});
+test('Глава 2 на восьмой ошибке: время стоит, продолжение безопасно',()=>{const g=game();score(g,8);assert(g.phase==='chapter'&&g.chapter===1&&g.strikes.length===0);const state=JSON.stringify(g);g.tick(30);g.move(1,0);g.typo();g.weave();g.pause();assert(JSON.stringify(g)===state);assert(g.continueChapter()&&g.phase==='playing'&&g.nextStrike===2.6&&g.invulnerable>0);});
+test('Глава 3 на шестнадцатой ошибке',()=>{const g=game();score(g,16);assert(g.phase==='chapter'&&g.chapter===2&&g.score===16);});
+test('Победа на 24-й ошибке и остановка состояния',()=>{const g=game();score(g,24);assert(g.phase==='won'&&g.score===24&&g.strikes.length===0);const state=JSON.stringify(g);g.tick(10);g.typo();g.move(0,1);g.weave();assert(JSON.stringify(g)===state);});
+test('Три попадания заканчивают раунд',()=>{const g=game();for(let i=0;i<3;i++){g.invulnerable=0;strike(g,.01);g.tick(.02);}assert(g.lives===0&&g.phase==='lost'&&g.hits===3);});
+test('Истечение времени и чистый повторный старт',()=>{const g=game();g.weave();score(g,10);g.tick(90);assert(g.phase==='lost'&&g.time===0);g.start();assert(g.phase==='playing'&&g.time===90&&g.lives===3&&g.score===0&&g.strikes.length===0&&g.webs.length===0&&g.silk===2&&g.combo===0&&g.chapter===0);});
+test('Удары автоматически появляются и удаляются',()=>{const g=game();for(let i=0;i<53;i++)g.tick(.05);assert(g.events.includes('warning')&&g.strikes.length>0);g.nextStrike=10;for(let i=0;i<40;i++)g.tick(.05);assert(g.strikes.length===0);});
+test('Новый удар даёт полное время предупреждения после длинного кадра',()=>{const g=game();g.tick(3);assert(g.lives===3&&g.strikes[0].age===0);});
+test('Ловушка стоит одну нить; дубли запрещены',()=>{const g=game();assert(g.weave()&&g.silk===1&&g.webs.length===1);assert(!g.weave()&&g.silk===1);g.move(0,1);assert(g.weave()&&g.silk===0);g.move(0,1);assert(!g.weave());});
+test('Паутина действительно поглощает удар и расходуется',()=>{const g=game();g.weave();strike(g,.1);g.tick(.11);assert(g.lives===3&&g.blocked===1&&g.webs.length===0&&g.strikes[0].blocked);g.invulnerable=0;strike(g,.1);g.tick(.11);assert(g.lives===2&&g.blocked===1);});
+test('Оставленная ловушка работает без паука на клавише',()=>{const g=game();g.weave();strike(g,.1);g.move(0,1);g.tick(.11);assert(g.blocked===1&&g.lives===3);});
+test('Просроченная паутина не защищает',()=>{const g=game();g.weave();g.nextStrike=20;g.tick(6);assert(!g.webs.length);strike(g,.1);g.tick(.11);assert(g.lives===2);});
+test('Шёлк восполняется за четыре опечатки, запас не выше трёх',()=>{const g=game();g.weave();score(g,4);assert(g.silk===2);score(g,12);assert(g.silk===3);});
+test('Серия из трёх даёт три секунды, время не выше 90',()=>{const g=game();g.time=80;score(g,3);assert(g.time===83&&g.bonusTime===3&&g.maxCombo===3);g.time=89;score(g,3);assert(g.time===90&&g.bonusTime===4);});
+test('Медленная игра и попадания сбрасывают серию',()=>{const g=game();score(g,2);g.nextStrike=20;g.tick(4.01);assert(g.combo===0);score(g,1);assert(g.combo===1);strike(g,.01);g.tick(.02);assert(g.combo===0&&g.maxCombo===2);});
+test('Вторая глава добавляет второй палец',()=>{const g=game();score(g,8);g.continueChapter();g.move(-5,-10);g.spawnStrikes();assert(g.strikes.length===2);assert(g.strikes.every(s=>s.age===0&&s.delay>=.75));});
+test('Финальная широкая атака оставляет другой ряд свободным',()=>{const g=game();score(g,16);g.continueChapter();g.row=1;g.col=4;g.volley=2;g.spawnStrikes();assert(g.strikes.length===3&&g.strikes.every(s=>s.row===1));g.move(-1,0);g.tick(1);assert(g.lives===3);});
+test('На краю широкая атака не выходит за клавиатуру',()=>{const g=game();score(g,16);g.continueChapter();g.col=0;g.volley=2;g.spawnStrikes();assert(g.strikes.length===2&&g.strikes.every(s=>s.col>=0&&s.col<10));});
+test('Некорректный dt не портит состояние',()=>{const g=game();const state=JSON.stringify(g);for(const dt of [-1,NaN,Infinity,0])g.tick(dt);assert(JSON.stringify(g)===state);});
+test('Все главы и разные сюжетные концовки существуют',()=>{const g=game();assert(NightStory.chapters.length===5&&NightStory.chapters.every(c=>c.title&&c.text&&c.threat));score(g,24);assert(NightStory.ending(g).tag.includes('ТИХИЙ'));g.hits=1;assert(NightStory.ending(g).tag.includes('ДОЛГ'));g.phase='lost';g.lives=0;assert(NightStory.ending(g).tag.includes('ОТСТУПЛЕНИЕ'));g.lives=2;assert(NightStory.ending(g).tag.includes('АВТОСБОРКА'));});
+document.querySelector('#summary').textContent=`Результат: ${passed} пройдено, ${failed} ошибок`;
+</script></html>
